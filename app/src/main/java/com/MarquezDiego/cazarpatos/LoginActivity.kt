@@ -5,23 +5,36 @@ import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import com.MarquezDiego.cazarpatos.R.layout.activity_login
+import com.MarquezDiego.cazarpatos.storage.EncryptedSharedPreferencesManager
+import com.MarquezDiego.cazarpatos.storage.FileExternalManager
+import com.MarquezDiego.cazarpatos.storage.SharedPreferencesManager
 
 class LoginActivity : AppCompatActivity() {
+    //lateinit var manejadorArchivo: FileHandler
+    lateinit var manejadorArchivo :FileHandler
     lateinit var editTextEmail:EditText
     lateinit var editTextPassword:EditText
     lateinit var buttonLogin:Button
     lateinit var buttonNewUser:Button
+    lateinit var checkBoxRecordarme: CheckBox
     lateinit var mediaPlayer: MediaPlayer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activity_login)
         //Inicialización de variables
+        //manejadorArchivo = SharedPreferencesManager(this)
+        //manejadorArchivo = EncryptedSharedPreferencesManager(this)
+        manejadorArchivo = FileExternalManager(this)
         editTextEmail = findViewById(R.id.editTextEmail)
         editTextPassword = findViewById(R.id.editTextPassword)
         buttonLogin = findViewById(R.id.buttonLogin)
         buttonNewUser = findViewById(R.id.buttonNewUser)
+        checkBoxRecordarme = findViewById(R.id.checkBoxRecordarme)
+        LeerDatosDePreferencias()
+        //LeerDatosDePreferenciasEncrypt()
         //Eventos clic
         buttonLogin.setOnClickListener {
             val email = editTextEmail.text.toString()
@@ -29,6 +42,9 @@ class LoginActivity : AppCompatActivity() {
             //Validaciones de datos requeridos y formatos
             if(!ValidarDatosRequeridos())
                 return@setOnClickListener
+            // Guardar datos en preferencias .
+            GuardarDatosEnPreferencias()
+            //GuardarDatosEncriptadosEnPreferencias()
             //Si pasa validación de datos requeridos, ir a pantalla principal
             val intencion = Intent(this, MainActivity::class.java)
             intencion.putExtra(EXTRA_LOGIN, email)
@@ -40,6 +56,48 @@ class LoginActivity : AppCompatActivity() {
         mediaPlayer=MediaPlayer.create(this, R.raw.title_screen)
         mediaPlayer.start()
     }
+    private fun GuardarDatosEnPreferencias(){
+        val email = editTextEmail.text.toString()
+        val clave = editTextPassword.text.toString()
+        val listadoAGrabar:Pair<String,String>
+        if(checkBoxRecordarme.isChecked){
+            listadoAGrabar = email to clave
+        }
+        else{
+            listadoAGrabar ="" to ""
+        }
+        manejadorArchivo.SaveInformation(listadoAGrabar)
+    }
+//    private fun GuardarDatosEncriptadosEnPreferencias(){
+//        val email = editTextEmail.text.toString()
+//        val clave = editTextPassword.text.toString()
+//        val listadoAGrabar:Pair<String,String>
+//        if(checkBoxRecordarme.isChecked){
+//            listadoAGrabar = email to clave
+//        }
+//        else{
+//            listadoAGrabar ="" to ""
+//        }
+//        manejadorArchivoEncrypt.SaveInformation(listadoAGrabar)
+//    }
+    private fun LeerDatosDePreferencias(){
+        val listadoLeido = manejadorArchivo.ReadInformation()
+        if(listadoLeido.first != null){
+            checkBoxRecordarme.isChecked = true
+        }
+        editTextEmail.setText ( listadoLeido.first )
+        editTextPassword.setText ( listadoLeido.second )
+    }
+
+//    private fun LeerDatosDePreferenciasEncrypt(){
+//        val listadoLeido = manejadorArchivoEncrypt.ReadInformation()
+//        if(listadoLeido.first != null){
+//            checkBoxRecordarme.isChecked = true
+//        }
+//        editTextEmail.setText ( listadoLeido.first )
+//        editTextPassword.setText ( listadoLeido.second )
+//    }
+
 
     private fun ValidarDatosRequeridos():Boolean{
         val email = editTextEmail.text.toString()
