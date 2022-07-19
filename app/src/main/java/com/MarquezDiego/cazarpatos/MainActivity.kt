@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -31,12 +32,21 @@ class MainActivity : AppCompatActivity() {
         //Obtener el usuario de pantalla login
         val extras = intent.extras ?: return
         val usuario = extras.getString(EXTRA_LOGIN) ?:"Unknown"
-        textViewUsuario.setText(usuario)
+        val delim = "@"
+        val usuarioCortado = usuario.split(delim)
+        textViewUsuario.setText(usuarioCortado[0])
+        var actionBar = getSupportActionBar()
+
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true)
+        }
 
         //Determina el ancho y largo de pantalla
         inicializarPantalla()
         //Cuenta regresiva del juego
         inicializarCuentaRegresiva()
+        //Habilitar return
+
         //Evento clic sobre la imagen del pato
         imageViewPato.setOnClickListener {
             if (gameOver) return@setOnClickListener
@@ -50,7 +60,19 @@ class MainActivity : AppCompatActivity() {
                 moverPato()
             }, 500)
         }
+
     }
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onContextItemSelected(item)
+    }
+
+
     private fun inicializarPantalla() {
         // 1. Obtenemos el tamaño de la pantalla del dispositivo
         val display = this.resources.displayMetrics
@@ -87,6 +109,7 @@ class MainActivity : AppCompatActivity() {
     private fun mostrarDialogoGameOver() {
         val builder = AlertDialog.Builder(this)
         builder
+            .setIcon(resources.getDrawable(android.R.drawable.ic_dialog_alert, theme))
             .setMessage("Felicidades!!\nHas conseguido cazar $contador patos")
             .setTitle("Fin del juego")
             .setPositiveButton("Reiniciar",

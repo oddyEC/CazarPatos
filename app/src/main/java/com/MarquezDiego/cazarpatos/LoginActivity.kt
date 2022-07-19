@@ -11,6 +11,7 @@ import com.MarquezDiego.cazarpatos.R.layout.activity_login
 import com.MarquezDiego.cazarpatos.storage.EncryptedSharedPreferencesManager
 import com.MarquezDiego.cazarpatos.storage.FileExternalManager
 import com.MarquezDiego.cazarpatos.storage.SharedPreferencesManager
+import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
     //lateinit var manejadorArchivo: FileHandler
@@ -102,6 +103,20 @@ class LoginActivity : AppCompatActivity() {
     private fun ValidarDatosRequeridos():Boolean{
         val email = editTextEmail.text.toString()
         val clave = editTextPassword.text.toString()
+        val EMAIL_ADDRESS_PATTERN = Pattern.compile(
+            "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+                    "\\@" +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,64}" +
+                    "(" +
+                    "\\." +
+                    "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
+                    ")+"
+        )
+        if(!EMAIL_ADDRESS_PATTERN.matcher(email).matches()){
+            editTextEmail.setError("Ingrese un email valido")
+            editTextEmail.requestFocus()
+            return false
+        }
         if (email.isEmpty()) {
             editTextEmail.setError("El email es obligatorio")
             editTextEmail.requestFocus()
@@ -112,8 +127,8 @@ class LoginActivity : AppCompatActivity() {
             editTextPassword.requestFocus()
             return false
         }
-        if (clave.length < 3) {
-            editTextPassword.setError("La clave debe tener al menos 3 caracteres")
+        if (clave.length < 8) {
+            editTextPassword.setError("La clave debe tener al menos 8 caracteres")
             editTextPassword.requestFocus()
             return false
         }
