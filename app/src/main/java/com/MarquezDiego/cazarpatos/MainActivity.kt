@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
         return super.onContextItemSelected(item)
     }
 
-
     private fun inicializarPantalla() {
         // 1. Obtenemos el tamaño de la pantalla del dispositivo
         val display = this.resources.displayMetrics

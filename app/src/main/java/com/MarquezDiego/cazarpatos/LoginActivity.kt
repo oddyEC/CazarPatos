@@ -11,6 +11,9 @@ import com.MarquezDiego.cazarpatos.R.layout.activity_login
 import com.MarquezDiego.cazarpatos.storage.EncryptedSharedPreferencesManager
 import com.MarquezDiego.cazarpatos.storage.FileExternalManager
 import com.MarquezDiego.cazarpatos.storage.SharedPreferencesManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.util.regex.Pattern
 
 class LoginActivity : AppCompatActivity() {
@@ -22,8 +25,11 @@ class LoginActivity : AppCompatActivity() {
     lateinit var buttonNewUser:Button
     lateinit var checkBoxRecordarme: CheckBox
     lateinit var mediaPlayer: MediaPlayer
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContentView(activity_login)
         //Inicialización de variables
         //manejadorArchivo = SharedPreferencesManager(this)
@@ -34,6 +40,8 @@ class LoginActivity : AppCompatActivity() {
         buttonLogin = findViewById(R.id.buttonLogin)
         buttonNewUser = findViewById(R.id.buttonNewUser)
         checkBoxRecordarme = findViewById(R.id.checkBoxRecordarme)
+        // Initialize Firebase Auth
+        auth = Firebase.auth
         LeerDatosDePreferencias()
         //LeerDatosDePreferenciasEncrypt()
         //Eventos clic
