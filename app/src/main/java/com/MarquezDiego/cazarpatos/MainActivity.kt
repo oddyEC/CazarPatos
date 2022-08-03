@@ -111,14 +111,14 @@ class MainActivity : AppCompatActivity() {
             .setIcon(resources.getDrawable(android.R.drawable.ic_dialog_alert, theme))
             .setMessage("Felicidades!!\nHas conseguido cazar $contador patos")
             .setTitle("Fin del juego")
-            .setPositiveButton("Reiniciar",
-                { _, _ ->
-                    reiniciarJuego()
-                })
-            .setNegativeButton("Cerrar",
-                { _, _ ->
-                    //dialog.dismiss()
-                })
+            .setPositiveButton("Reiniciar"
+            ) { _, _ ->
+                reiniciarJuego()
+            }
+            .setNegativeButton("Cerrar"
+            ) { _, _ ->
+                //dialog.dismiss()
+            }
         builder.create().show()
     }
     fun reiniciarJuego(){

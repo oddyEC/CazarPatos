@@ -4,9 +4,11 @@ import android.content.Intent
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import com.MarquezDiego.cazarpatos.R.layout.activity_login
 import com.MarquezDiego.cazarpatos.storage.EncryptedSharedPreferencesManager
 import com.MarquezDiego.cazarpatos.storage.FileExternalManager
@@ -51,20 +53,65 @@ class LoginActivity : AppCompatActivity() {
             //Validaciones de datos requeridos y formatos
             if(!ValidarDatosRequeridos())
                 return@setOnClickListener
-            // Guardar datos en preferencias .
+            //Guardar datos en preferencias.
             GuardarDatosEnPreferencias()
-            //GuardarDatosEncriptadosEnPreferencias()
             //Si pasa validación de datos requeridos, ir a pantalla principal
-            val intencion = Intent(this, MainActivity::class.java)
-            intencion.putExtra(EXTRA_LOGIN, email)
-            startActivity(intencion)
+            //val intencion = Intent(this, MainActivity::class.java)
+            //intencion.putExtra(EXTRA_LOGIN, email)
+            //startActivity(intencion)
+            AutenticarUsuario(email, clave)
+
+
         }
         buttonNewUser.setOnClickListener{
-
+            val email = editTextEmail.text.toString()
+            val clave = editTextPassword.text.toString()
+            //Validaciones de datos requeridos y formatos
+            if(!ValidarDatosRequeridos())
+                return@setOnClickListener
+            SignUpNewUser(email,clave)
+            AutenticarUsuario(email, clave)
         }
         mediaPlayer=MediaPlayer.create(this, R.raw.title_screen)
         mediaPlayer.start()
     }
+    fun AutenticarUsuario(email:String, password:String){
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d(EXTRA_LOGIN, "signInWithEmail:success")
+                    //Si pasa validación de datos requeridos, ir a pantalla principal
+                    val intencion = Intent(this, MainActivity::class.java)
+                    intencion.putExtra(EXTRA_LOGIN, auth.currentUser!!.email)
+                    startActivity(intencion)
+                    //finish()
+                } else {
+                    Log.w(EXTRA_LOGIN, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, task.exception!!.message,
+                        Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+    fun SignUpNewUser(email:String, password:String){
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(EXTRA_LOGIN, "createUserWithEmail:success")
+                    val user = auth.currentUser
+                    Toast.makeText(baseContext, "New user saved.",
+                        Toast.LENGTH_SHORT).show()
+                    //updateUI(user)
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(EXTRA_LOGIN, "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                    //updateUI(null)
+                }
+            }
+    }
+
     private fun GuardarDatosEnPreferencias(){
         val email = editTextEmail.text.toString()
         val clave = editTextPassword.text.toString()
