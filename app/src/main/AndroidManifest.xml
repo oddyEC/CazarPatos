@@ -12,6 +12,7 @@
         android:theme="@style/Theme.CazarPatos">
         <activity
             android:name=".RankingActivity"
+            android:parentActivityName=".MainActivity"
             android:exported="false" />
         <activity android:name=".MainActivity" />
         <activity
